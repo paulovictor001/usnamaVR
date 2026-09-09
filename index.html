@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     >
 
     <title>Teste WebAR</title>
@@ -18,174 +16,58 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-
+        html,
         body {
             margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
+            background: black;
         }
 
-        #status {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            z-index: 9999;
-
-            background: rgba(0, 0, 0, 0.75);
-            color: white;
-
-            padding: 12px 20px;
-
-            border-radius: 10px;
-
-            font-family: Arial, sans-serif;
-
-            text-align: center;
+        a-scene {
+            width: 100%;
+            height: 100%;
         }
 
+        .a-canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
     </style>
-
 </head>
 
 <body>
 
-    <div id="status">
-        📷 Iniciando câmera...
-    </div>
-
-
-    <!--
-        Cena AR
-    -->
-
     <a-scene
-
-        mindar-image="
-            imageTargetSrc: targets.mind;
-        "
-
-        embedded
-
-        color-space="sRGB"
-
-        renderer="
-            colorManagement: true,
-            physicallyCorrectLights
-        "
-
+        mindar-image="imageTargetSrc: ./targets.mind;"
         vr-mode-ui="enabled: false"
-
-        device-orientation-permission-ui="
-            enabled: false
-        "
+        device-orientation-permission-ui="enabled: false"
+        renderer="colorManagement: true"
+        embedded
     >
-
-        <!-- Câmera -->
 
         <a-camera
             position="0 0 0"
-            look-controls="enabled: false">
-        </a-camera>
+            look-controls="enabled: false"
+        ></a-camera>
 
+        <!-- IMAGEM ALVO -->
+        <a-entity mindar-image-target="targetIndex: 0">
 
-        <!--
-            Imagem reconhecida
-        -->
-
-        <a-entity
-            mindar-image-target="targetIndex: 0"
-        >
-
-            <!-- Cubo 3D -->
-
+            <!-- CUBO DE TESTE -->
             <a-box
-
                 position="0 0 0.2"
-
-                rotation="0 0 0"
-
+                width="0.5"
+                height="0.5"
+                depth="0.5"
                 color="red"
-
-                animation="
-                    property: rotation;
-                    to: 0 360 0;
-                    loop: true;
-                    dur: 4000;
-                    easing: linear
-                "
-            >
-
-            </a-box>
+            ></a-box>
 
         </a-entity>
 
     </a-scene>
 
-
-    <script>
-
-        const status =
-            document.getElementById("status");
-
-
-        /*
-            Quando o MindAR encontrar
-            a imagem
-        */
-
-        document.querySelector("a-scene")
-            .addEventListener("targetFound", () => {
-
-                status.innerText =
-                    "🎯 Imagem encontrada!";
-
-            });
-
-
-        /*
-            Quando a imagem sair da câmera
-        */
-
-        document.querySelector("a-scene")
-            .addEventListener("targetLost", () => {
-
-                status.innerText =
-                    "🔎 Procurando imagem...";
-
-            });
-
-
-        /*
-            Quando o AR estiver pronto
-        */
-
-        document.querySelector("a-scene")
-            .addEventListener("arReady", () => {
-
-                status.innerText =
-                    "📷 Aponte para a imagem";
-
-            });
-
-
-        /*
-            Erro
-        */
-
-        document.querySelector("a-scene")
-            .addEventListener("arError", (event) => {
-
-                console.error(event);
-
-                status.innerText =
-                    "❌ Erro ao iniciar AR";
-
-            });
-
-    </script>
-
 </body>
-
 </html>
