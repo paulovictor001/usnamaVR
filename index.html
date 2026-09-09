@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Teste WebAR</title>
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #status {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+
+            padding: 12px 18px;
+            border-radius: 10px;
+
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="status">
+        Iniciando teste...
+    </div>
+
+    <a-scene
+        embedded
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: true">
+
+        <!-- Iluminação -->
+        <a-light
+            type="ambient"
+            intensity="2">
+        </a-light>
+
+        <a-light
+            type="directional"
+            position="2 4 2"
+            intensity="2">
+        </a-light>
+
+        <!-- Objeto 3D -->
+        <a-box
+            position="0 0 -3"
+            rotation="0 45 0"
+            color="#4CAF50"
+            animation="property: rotation; to: 0 405 0; loop: true; dur: 5000">
+        </a-box>
+
+        <!-- Câmera -->
+        <a-camera
+            position="0 0 0">
+        </a-camera>
+
+    </a-scene>
+
+    <script>
+        const status = document.getElementById("status");
+
+        navigator.mediaDevices
+            .getUserMedia({
+                video: {
+                    facingMode: "environment"
+                },
+                audio: false
+            })
+            .then((stream) => {
+
+                status.innerHTML =
+                    "✅ Câmera funcionando!<br>WebGL + 3D carregando...";
+
+                // Libera a câmera depois do teste.
+                stream.getTracks().forEach(track => track.stop());
+
+                setTimeout(() => {
+                    status.innerHTML =
+                        "✅ Câmera disponível<br>🧊 Se você vê o cubo, o 3D está funcionando!";
+                }, 1500);
+
+            })
+            .catch((error) => {
+
+                console.error(error);
+
+                status.innerHTML =
+                    "❌ Não foi possível acessar a câmera<br>" +
+                    error.name;
+            });
+    </script>
+
+</body>
+</html>
