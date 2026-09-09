@@ -1,120 +1,191 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Teste de Câmera</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Teste WebAR</title>
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+    <!-- MindAR -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
 
         body {
             margin: 0;
-            background: #111;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        h1 {
-            margin: 20px;
-        }
-
-        #video {
-            width: 100%;
-            max-width: 600px;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-            background: #222;
+            overflow: hidden;
         }
 
         #status {
-            padding: 15px;
-            font-size: 18px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            z-index: 9999;
+
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 10px;
+
+            font-family: Arial, sans-serif;
+
+            text-align: center;
         }
 
-        button {
-            padding: 15px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-        }
     </style>
+
 </head>
 
 <body>
 
-    <h1>Teste de câmera</h1>
-
     <div id="status">
-        Clique no botão para iniciar a câmera.
+        📷 Iniciando câmera...
     </div>
 
-    <button id="start">
-        📷 Abrir câmera
-    </button>
 
-    <video
-        id="video"
-        autoplay
-        playsinline>
-    </video>
+    <!--
+        Cena AR
+    -->
 
     <a-scene
-    mindar-image="imageTargetSrc: targets.mind;"
-    embedded
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
 
-    <a-entity mindar-image-target="targetIndex: 0">
+        mindar-image="
+            imageTargetSrc: targets.mind;
+        "
 
-    <a-box
-        position="0 0 0.2"
-        rotation="0 0 0"
-        color="red">
-    </a-box>
+        embedded
 
-    </a-entity>
+        color-space="sRGB"
+
+        renderer="
+            colorManagement: true,
+            physicallyCorrectLights
+        "
+
+        vr-mode-ui="enabled: false"
+
+        device-orientation-permission-ui="
+            enabled: false
+        "
+    >
+
+        <!-- Câmera -->
+
+        <a-camera
+            position="0 0 0"
+            look-controls="enabled: false">
+        </a-camera>
+
+
+        <!--
+            Imagem reconhecida
+        -->
+
+        <a-entity
+            mindar-image-target="targetIndex: 0"
+        >
+
+            <!-- Cubo 3D -->
+
+            <a-box
+
+                position="0 0 0.2"
+
+                rotation="0 0 0"
+
+                color="red"
+
+                animation="
+                    property: rotation;
+                    to: 0 360 0;
+                    loop: true;
+                    dur: 4000;
+                    easing: linear
+                "
+            >
+
+            </a-box>
+
+        </a-entity>
+
+    </a-scene>
+
 
     <script>
-        const button = document.getElementById("start");
-        const video = document.getElementById("video");
-        const status = document.getElementById("status");
 
-        button.addEventListener("click", async () => {
+        const status =
+            document.getElementById("status");
 
-            try {
 
-                status.innerText = "Solicitando acesso à câmera...";
+        /*
+            Quando o MindAR encontrar
+            a imagem
+        */
 
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: "environment"
-                    },
-                    audio: false
-                });
-
-                video.srcObject = stream;
-
-                status.innerText = "✅ Câmera funcionando!";
-
-            } catch (error) {
-
-                console.error(error);
+        document.querySelector("a-scene")
+            .addEventListener("targetFound", () => {
 
                 status.innerText =
-                    "❌ Erro: " +
-                    error.name +
-                    " - " +
-                    error.message;
-            }
+                    "🎯 Imagem encontrada!";
 
-        });
+            });
+
+
+        /*
+            Quando a imagem sair da câmera
+        */
+
+        document.querySelector("a-scene")
+            .addEventListener("targetLost", () => {
+
+                status.innerText =
+                    "🔎 Procurando imagem...";
+
+            });
+
+
+        /*
+            Quando o AR estiver pronto
+        */
+
+        document.querySelector("a-scene")
+            .addEventListener("arReady", () => {
+
+                status.innerText =
+                    "📷 Aponte para a imagem";
+
+            });
+
+
+        /*
+            Erro
+        */
+
+        document.querySelector("a-scene")
+            .addEventListener("arError", (event) => {
+
+                console.error(event);
+
+                status.innerText =
+                    "❌ Erro ao iniciar AR";
+
+            });
+
     </script>
 
 </body>
+
 </html>
