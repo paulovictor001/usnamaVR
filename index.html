@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     >
 
-    <title>WebAR - Teste</title>
+    <title>WebAR Teste</title>
 
     <style>
         html,
@@ -33,20 +33,28 @@
             left: 50%;
             transform: translateX(-50%);
 
-            z-index: 10;
+            z-index: 100;
+
+            padding: 10px 16px;
 
             background: rgba(0, 0, 0, 0.7);
             color: white;
 
-            padding: 10px 16px;
             border-radius: 8px;
 
             font-family: Arial, sans-serif;
-            font-size: 14px;
-
-            text-align: center;
         }
     </style>
+
+    <!-- Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js"
+        }
+    }
+    </script>
+
 </head>
 
 <body>
@@ -58,109 +66,134 @@
     <div id="ar-container"></div>
 
 
-    <!-- Three.js -->
     <script type="module">
 
-        import * as THREE from
-            "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js";
+        import * as THREE from "three";
 
         import { MindARThree } from
             "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js";
 
 
-        // --------------------------------
+        // ==========================
         // ELEMENTOS
-        // --------------------------------
+        // ==========================
 
-        const container = document.querySelector("#ar-container");
-        const status = document.querySelector("#status");
+        const container =
+            document.querySelector("#ar-container");
+
+        const status =
+            document.querySelector("#status");
 
 
-        // --------------------------------
+        // ==========================
         // MINDAR
-        // --------------------------------
+        // ==========================
 
         const mindarThree = new MindARThree({
+
             container: container,
 
             imageTargetSrc: "./targets.mind"
+
         });
 
 
-        // --------------------------------
+        // ==========================
         // THREE.JS
-        // --------------------------------
+        // ==========================
 
-        const { renderer, scene, camera } = mindarThree;
+        const {
+            renderer,
+            scene,
+            camera
+        } = mindarThree;
 
 
-        // Luz
-        const light = new THREE.HemisphereLight(
-            0xffffff,
-            0xbbbbbb,
-            3
-        );
+        // ==========================
+        // LUZ
+        // ==========================
+
+        const light =
+            new THREE.HemisphereLight(
+                0xffffff,
+                0xbbbbbb,
+                3
+            );
 
         scene.add(light);
 
 
-        // --------------------------------
+        // ==========================
         // CUBO
-        // --------------------------------
+        // ==========================
 
-        const geometry = new THREE.BoxGeometry(
-            0.5,
-            0.5,
-            0.5
-        );
-
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xff0000
-        });
-
-        const cube = new THREE.Mesh(
-            geometry,
-            material
-        );
+        const geometry =
+            new THREE.BoxGeometry(
+                0.5,
+                0.5,
+                0.5
+            );
 
 
-        // --------------------------------
+        const material =
+            new THREE.MeshStandardMaterial({
+                color: 0xff0000
+            });
+
+
+        const cube =
+            new THREE.Mesh(
+                geometry,
+                material
+            );
+
+
+        // ==========================
         // TARGET
-        // --------------------------------
+        // ==========================
 
-        const anchor = mindarThree.addAnchor(0);
+        const anchor =
+            mindarThree.addAnchor(0);
+
 
         anchor.group.add(cube);
 
 
-        // --------------------------------
-        // EVENTOS
-        // --------------------------------
+        // ==========================
+        // TARGET ENCONTRADO
+        // ==========================
 
         anchor.onTargetFound = () => {
 
-            status.innerText = "Imagem encontrada!";
+            status.innerText =
+                "🎯 Imagem encontrada!";
 
         };
 
+
+        // ==========================
+        // TARGET PERDIDO
+        // ==========================
 
         anchor.onTargetLost = () => {
 
-            status.innerText = "Procurando imagem...";
+            status.innerText =
+                "🔎 Procurando imagem...";
 
         };
 
 
-        // --------------------------------
-        // INICIAR AR
-        // --------------------------------
+        // ==========================
+        // INICIAR
+        // ==========================
 
         try {
 
             await mindarThree.start();
 
             status.innerText =
-                "Aponte a câmera para a imagem";
+                "📷 Aponte para a imagem";
+
 
             renderer.setAnimationLoop(() => {
 
@@ -178,7 +211,7 @@
             console.error(error);
 
             status.innerText =
-                "Erro ao iniciar a câmera";
+                "❌ Erro ao iniciar AR";
 
         }
 
