@@ -13,23 +13,24 @@
     <title>WebAR - Teste</title>
 
 
-    <!-- ========================= -->
+    <!-- ================================= -->
     <!-- IMPORT MAP -->
-    <!-- ========================= -->
+    <!-- ================================= -->
 
     <script type="importmap">
     {
         "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/"
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+            "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
         }
     }
     </script>
 
 
-    <!-- ========================= -->
+    <!-- ================================= -->
     <!-- CSS -->
-    <!-- ========================= -->
+    <!-- ================================= -->
 
     <style>
 
@@ -139,9 +140,9 @@
 <body>
 
 
-    <!-- ========================= -->
+    <!-- ================================= -->
     <!-- STATUS -->
-    <!-- ========================= -->
+    <!-- ================================= -->
 
     <div id="status">
 
@@ -150,29 +151,28 @@
     </div>
 
 
-    <!-- ========================= -->
-    <!-- AR -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- CONTAINER AR -->
+    <!-- ================================= -->
 
     <div id="ar-container"></div>
 
 
-    <!-- ========================= -->
+    <!-- ================================= -->
     <!-- JAVASCRIPT -->
-    <!-- ========================= -->
+    <!-- ================================= -->
 
     <script type="module">
 
         import * as THREE from "three";
 
-
         import { MindARThree } from
-            "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js";
+            "mindar-image-three";
 
 
-        // =====================================
+        // =================================
         // ELEMENTOS
-        // =====================================
+        // =================================
 
         const container =
             document.getElementById("ar-container");
@@ -182,9 +182,9 @@
             document.getElementById("status");
 
 
-        // =====================================
+        // =================================
         // MINDAR
-        // =====================================
+        // =================================
 
         const mindarThree =
             new MindARThree({
@@ -196,24 +196,22 @@
             });
 
 
-        // =====================================
+        // =================================
         // THREE.JS
-        // =====================================
+        // =================================
 
         const {
 
             renderer,
-
             scene,
-
             camera
 
         } = mindarThree;
 
 
-        // =====================================
-        // CONFIGURAÇÃO DO RENDERER
-        // =====================================
+        // =================================
+        // RENDERER
+        // =================================
 
         renderer.setPixelRatio(
             window.devicePixelRatio
@@ -226,9 +224,7 @@
         );
 
 
-        // =====================================
-        // FUNDO TRANSPARENTE
-        // =====================================
+        // Deixar o canvas transparente
 
         renderer.setClearColor(
             0x000000,
@@ -236,9 +232,9 @@
         );
 
 
-        // =====================================
+        // =================================
         // LUZ
-        // =====================================
+        // =================================
 
         const light =
             new THREE.HemisphereLight(
@@ -251,9 +247,9 @@
         scene.add(light);
 
 
-        // =====================================
+        // =================================
         // CUBO 3D
-        // =====================================
+        // =================================
 
         const geometry =
             new THREE.BoxGeometry(
@@ -278,9 +274,9 @@
             );
 
 
-        // =====================================
+        // =================================
         // TARGET
-        // =====================================
+        // =================================
 
         const anchor =
             mindarThree.addAnchor(0);
@@ -289,14 +285,14 @@
         anchor.group.add(cube);
 
 
-        // =====================================
+        // =================================
         // TARGET ENCONTRADO
-        // =====================================
+        // =================================
 
         anchor.onTargetFound = () => {
 
             console.log(
-                "Target encontrado!"
+                "🎯 Target encontrado!"
             );
 
 
@@ -306,14 +302,14 @@
         };
 
 
-        // =====================================
+        // =================================
         // TARGET PERDIDO
-        // =====================================
+        // =================================
 
         anchor.onTargetLost = () => {
 
             console.log(
-                "Target perdido!"
+                "🔎 Target perdido!"
             );
 
 
@@ -323,9 +319,9 @@
         };
 
 
-        // =====================================
+        // =================================
         // INICIAR AR
-        // =====================================
+        // =================================
 
         try {
 
@@ -337,11 +333,13 @@
 
 
             console.log(
-                "MindAR iniciado!"
+                "✅ MindAR iniciado!"
             );
 
 
-            // Procurar vídeo criado pelo MindAR
+            // =================================
+            // VÍDEO
+            // =================================
 
             const video =
                 container.querySelector("video");
@@ -350,42 +348,30 @@
             if (video) {
 
                 console.log(
-                    "Vídeo da câmera encontrado!"
+                    "✅ Vídeo da câmera encontrado!"
                 );
 
 
                 video.style.position =
                     "fixed";
 
-
                 video.style.top =
                     "0";
-
 
                 video.style.left =
                     "0";
 
-
                 video.style.width =
                     "100%";
-
 
                 video.style.height =
                     "100%";
 
-
                 video.style.objectFit =
                     "cover";
 
-
                 video.style.zIndex =
                     "1";
-
-            } else {
-
-                console.error(
-                    "Vídeo da câmera não encontrado!"
-                );
 
             }
 
@@ -418,7 +404,7 @@
         } catch (error) {
 
             console.error(
-                "Erro ao iniciar AR:",
+                "❌ Erro ao iniciar AR:",
                 error
             );
 
@@ -429,9 +415,9 @@
         }
 
 
-        // =====================================
+        // =================================
         // RESIZE
-        // =====================================
+        // =================================
 
         window.addEventListener(
             "resize",
