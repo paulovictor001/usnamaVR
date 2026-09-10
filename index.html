@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -12,6 +11,7 @@
 
     <title>WebAR Teste</title>
 
+    <!-- Import Map do Three.js -->
     <script type="importmap">
     {
         "imports": {
@@ -45,12 +45,150 @@
             z-index: 100;
 
             padding: 10px 16px;
+
             background: rgba(0, 0, 0, 0.7);
             color: white;
+
             border-radius: 8px;
 
             font-family: Arial, sans-serif;
+            text-align: center;
         }
     </style>
-
 </head>
+
+<body>
+
+    <div id="status">
+        Carregando AR...
+    </div>
+
+    <div id="ar-container"></div>
+
+
+    <script type="module">
+
+        import * as THREE from "three";
+
+        import { MindARThree } from
+            "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js";
+
+
+        const container =
+            document.getElementById("ar-container");
+
+        const status =
+            document.getElementById("status");
+
+
+        // Criar MindAR
+        const mindarThree = new MindARThree({
+
+            container: container,
+
+            imageTargetSrc: "./targets.mind"
+
+        });
+
+
+        // Pegar elementos do Three.js
+        const {
+            renderer,
+            scene,
+            camera
+        } = mindarThree;
+
+
+        // Luz
+        const light =
+            new THREE.HemisphereLight(
+                0xffffff,
+                0xbbbbbb,
+                3
+            );
+
+        scene.add(light);
+
+
+        // Criar cubo
+        const geometry =
+            new THREE.BoxGeometry(
+                0.5,
+                0.5,
+                0.5
+            );
+
+        const material =
+            new THREE.MeshStandardMaterial({
+                color: 0xff0000
+            });
+
+        const cube =
+            new THREE.Mesh(
+                geometry,
+                material
+            );
+
+
+        // Criar target
+        const anchor =
+            mindarThree.addAnchor(0);
+
+        anchor.group.add(cube);
+
+
+        // Quando encontrar a imagem
+        anchor.onTargetFound = () => {
+
+            status.innerText =
+                "🎯 Imagem encontrada!";
+
+        };
+
+
+        // Quando perder a imagem
+        anchor.onTargetLost = () => {
+
+            status.innerText =
+                "🔎 Procurando imagem...";
+
+        };
+
+
+        // Iniciar
+        try {
+
+            status.innerText =
+                "📷 Iniciando câmera...";
+
+            await mindarThree.start();
+
+            status.innerText =
+                "📷 Aponte para a imagem";
+
+
+            renderer.setAnimationLoop(() => {
+
+                cube.rotation.y += 0.01;
+
+                renderer.render(
+                    scene,
+                    camera
+                );
+
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            status.innerText =
+                "❌ Erro ao iniciar AR";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
